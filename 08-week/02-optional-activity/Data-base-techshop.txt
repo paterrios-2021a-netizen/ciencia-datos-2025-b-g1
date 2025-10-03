@@ -1,0 +1,114 @@
+ CREACIÓN DE LA BASE DE DATOS
+
+CREATE DATABASE techshop;
+USE techshop;
+
+ TABLA DE CLIENTES
+
+CREATE TABLE clientes (
+    id_cliente INT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL
+);
+
+ TABLA DE PRODUCTOS
+
+CREATE TABLE productos (
+    id_producto INT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL CHECK (precio >= 0)
+);
+
+ TABLA DE VENTAS (detalle de ventas originales)
+
+CREATE TABLE ventas (
+    id_venta INT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    fecha DATE NOT NULL,
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+);
+
+
+ TABLA CONSOLIDADA: ventas_limpias (resultado del ETL)
+
+CREATE TABLE ventas_limpias (
+    id_venta INT NOT NULL,
+    id_cliente INT NOT NULL,
+    nombre_cliente VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    id_producto INT NOT NULL,
+    nombre_producto VARCHAR(100) NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    precio DECIMAL(10,2) NOT NULL CHECK (precio >= 0),
+    fecha DATE NOT NULL,
+    monto DECIMAL(12,2) NOT NULL CHECK (monto >= 0),
+    CONSTRAINT pk_venta PRIMARY KEY (id_venta, id_producto)
+);
+
+INSERCIÓN DE DATOS
+
+ Insertar clientes
+INSERT INTO clientes VALUES (1, 'JUAN PEREZ', 'juanperez@gmail.com');
+INSERT INTO clientes VALUES (2, 'ANA LOPEZ', 'analopez@gmail.com');
+INSERT INTO clientes VALUES (3, 'PEDRO RUIZ', 'pedro.ruiz@hotmail.com');
+
+ Insertar productos
+INSERT INTO productos VALUES (101, 'Laptop', 2500.00);
+INSERT INTO productos VALUES (102, 'Mouse', 25.00);
+INSERT INTO productos VALUES (103, 'Teclado', 40.00);
+INSERT INTO productos VALUES (104, 'Monitor', 450.00);
+
+ Insertar ventas
+INSERT INTO ventas VALUES (1, 1, 101, 2, '2024-01-05'); -- Juan compra 2 laptops
+INSERT INTO ventas VALUES (2, 2, 102, 1, '2024-02-10'); -- Ana compra 1 mouse
+INSERT INTO ventas VALUES (3, 3, 103, 3, '2024-03-10'); -- Pedro compra 3 teclados
+INSERT INTO ventas VALUES (4, 1, 104, 1, '2024-04-02'); -- Juan compra 1 monitor
+
+ Insertar en ventas_limpias (ya transformados)
+
+INSERT INTO ventas_limpias
+VALUES (1, 1, 'JUAN PEREZ', 'juanperez@gmail.com', 101, 'Laptop', 2, 2500.00, '2024-01-05', 5000.00);
+
+INSERT INTO ventas_limpias
+VALUES (2, 2, 'ANA LOPEZ', 'analopez@gmail.com', 102, 'Mouse', 1, 25.00, '2024-02-10', 25.00);
+
+INSERT INTO ventas_limpias
+VALUES (3, 3, 'PEDRO RUIZ', 'pedro.ruiz@hotmail.com', 103, 'Teclado', 3, 40.00, '2024-03-10', 120.00);
+
+INSERT INTO ventas_limpias
+VALUES (4, 1, 'JUAN PEREZ', 'juanperez@gmail.com', 104, 'Monitor', 1, 450.00, '2024-04-02', 450.00);
+
+CONSULTAS
+
+ 1. Total de ventas por cliente
+SELECT nombre_cliente, SUM(monto) AS total_gastado
+FROM ventas_limpias
+GROUP BY nombre_cliente
+ORDER BY total_gastado DESC;
+
+ 2. Productos más vendidos por cantidad
+SELECT nombre_producto, SUM(cantidad) AS total_vendido
+FROM ventas_limpias
+GROUP BY nombre_producto
+ORDER BY total_vendido DESC;
+
+ 3. Ingresos por mes
+SELECT strftime('%Y-%m', fecha) AS mes, SUM(monto) AS ingresos
+FROM ventas_limpias
+GROUP BY mes
+ORDER BY mes;
+
+ 4. Venta de mayor valor
+SELECT *
+FROM ventas_limpias
+ORDER BY monto DESC
+LIMIT 1;
+
+ 5. Clientes que compraron más de un producto diferente
+SELECT id_cliente, nombre_cliente, COUNT(DISTINCT id_producto) AS productos_distintos
+FROM ventas_limpias
+GROUP BY id_cliente, nombre_cliente
+HAVING productos_distintos > 1;

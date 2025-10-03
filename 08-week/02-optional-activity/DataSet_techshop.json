@@ -1,0 +1,19 @@
+{
+  "clientes": [
+    {"id_cliente": 1, "nombre": "Juan Perez", "email": "juanperez@gmail.com"},
+    {"id_cliente": 2, "nombre": "Ana Lopez", "email": "analopez@gmail.com"},
+    {"id_cliente": 3, "nombre": "Pedro Ruiz", "email": "pedro.ruiz@hotmail.com"},
+    {"id_cliente": 2, "nombre": "Ana Lopez", "email": "analopez@gmail.com"},
+    {"id_cliente": 4, "nombre": null, "email": "carlos.silva@gmail.com"}
+  ],
+  "productos": [
+    {"id_producto": 101, "nombre": "Laptop", "precio": 2500.00},
+    {"id_producto": 102, "nombre": "Mouse", "precio": 25.00},
+    {"id_producto": 103, "nombre": "Teclado", "precio": 40.00}
+  ],
+  "ventas": [
+    {"id_venta": 1, "id_cliente": 1, "id_producto": 101, "fecha": "2024-01-05", "cantidad": 2},
+    {"id_venta": 2, "id_cliente": 2, "id_producto": 102, "fecha": "2024/02/10", "cantidad": 1},
+    {"id_venta": 3, "id_cliente": 3, "id_producto": 103, "fecha": "10-03-2024", "cantidad": 3}
+  ]
+}
