@@ -1,8 +1,7 @@
 **Autor:** Paula Andrea Terrios Ossa
 **Materia:** Ciencia de Datos  
 **Fecha:** 8/11/2025  
-**Tema :** Creación de Tablero de Visualización en Python (Dash) a partir de un Dataset de Ventas  
-
+---
 
 # Reflexión Crítica sobre la Utilidad del Tablero en la Toma de Decisiones
 
